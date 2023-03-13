@@ -1,4 +1,4 @@
-import { screen, render, waitFor } from '@testing-library/react'
+import { screen, render, waitFor, fireEvent } from '@testing-library/react'
 import Home from '@src/pages/index'
 import userEvent from '@testing-library/user-event'
 
@@ -29,7 +29,7 @@ it('should render the page with 10 results', () => {
 
 it('should intersect the last element and then show 20 results', async () => {
   mockIntersectionObserver()
-  render(<Home />)
+  const { rerender } = render(<Home />)
 
   expect(screen.queryAllByRole('listitem').length).toBe(10)
 
@@ -41,6 +41,9 @@ it('should intersect the last element and then show 20 results', async () => {
       [{ isIntersecting: true }]
     )
   })
+
+  fireEvent.scroll(window, { target: { scrollY: 10000 } })
+  rerender(<Home />)
 
   await waitFor(() => {
     expect(screen.queryAllByRole('listitem').length).toBe(20)
